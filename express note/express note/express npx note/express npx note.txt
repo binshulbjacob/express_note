@@ -1,0 +1,188 @@
+<--------------------------install----------------------->
+
+npm init
+npm install
+npx express-generator --hbs
+npm start
+<!---------------->
+
+
+
+
+
+<!-----------image-display--------->
+
+app.use(express.static('public'));
+
+<img src="/images/image.jpg">
+
+<!---->
+
+<--------------------array value------------------------->
+in <---js-->
+
+router.get('/', function(req, res, next) {
+  const values=["binshul","binshulvilla","trader"]
+  res.render('about',{values});
+});
+
+<!--hbs-->
+
+<h3>welcome to out</h3>
+
+{{#each values}}
+<h4>{{this}}</h4>       <!---this curentitem--->
+ {{/each}}
+
+<---->
+
+
+<!--another_one---->
+<h3>welcome to out</h3>
+{{#each values}}
+<h4>{{@index}}-{{this}}</h4>       <!--this curentitem-->
+ {{/each}}
+
+{{@index}} used for se array locations
+
+ouput:welcome to out
+0-binshul
+1-binshulvilla
+2-trader
+
+<!--------------------ADD 5 data------>
+const five=[{name:'binshul',address:'villa',    gender:'male'},
+              {name:'rahul',  address:'rahulvilla',gender:'male'},
+              {name:'adi',    address:'adivilla',  gender:'male'},
+              {name:'robert', address:'robvilla',  gender:'male'},
+              {name:'parag',  address:'paragvilla',gender:'male'}]
+
+              res.render('about',{five});                                                                                    //only one render add
+
+});
+<---------------------display_in_table_format-------------------->
+<!---hbs--->
+
+<table border="2">
+     <tr>
+    <th>name</th>
+    <th>address</th>
+    <th>gender</th>
+  </tr>
+  {{#each five}}
+<tr>
+
+    <td>{{this.name}}</td>
+    <td>{{this.address}}</td>
+    <td>{{this.gender}}</td>
+  </tr>
+  {{/each}}
+  </table>
+
+(each give inside the call athoer way get more heading )
+
+
+<!---------------displaytwo--------------------->
+
+
+const person={name:"binshul",comments:{comment:' water is a liquid',date:'01:8:23'}}
+   res.render('about',{user,values,five,person});   
+
+<----->
+<h3>{{person.name}}</h3>
+<h3>{{person.comments.comment}}</h3>
+<!------------------------------------------->
+
+
+<!-------------------welcome----this_is_admin--------------------->
+
+ const welcome={ name:"binshul",admin:true}
+   res.render('about',{user,values,five,person,welcome});
+
+
+{{#if welcome.admin}}
+<h1>this is admin</h1>
+{{else}}
+<h1>this is normal user</h1>
+{{/if}}
+
+output:this is admin
+
+(if true in js put false it show =this is not normal user)
+
+(example below====)
+
+<!--------------------register if home page diaplay no then registration page home  name contact email password----->
+ 
+ {{#if login.admin}}
+
+<div class="row">
+<div class="col-4">
+    <div class="card">
+        <img src="images\0x0.webp" alt="" class="card-img-top">
+        <div class="body">
+            <h3> for sale</h3>
+            <h4 class="text-center">Granny market</h4>
+        </div>
+    </div>
+</div>
+<div class="col-4">
+    <div class="card">
+        <img src="images\hevy6dvk7gien0rmg37n.webp" alt="" class="card-img-top">
+        <div class="body">
+            <h3> for sale</h3>
+            <h4 class="text-center">Granny market</h4>
+        </div>
+    </div>
+</div>
+<div class="col-4">
+    <div class="card">
+        <img src="images\download.jpeg" alt="" class="card-img-top">
+        <div class="body">
+            <h3> for sale</h3>
+            <h4 class="text-center">Granny market</h4>
+        </div>
+    </div>
+</div>
+</div> <br>
+
+{{else}}
+ <div class="container w-50"><br>
+<form action="" method="post" class="form-control">
+<input type="text" class="form-control" name="name" placeholder="name"><br>
+<input type="text" class="form-control" name="contact" placeholder="contact"><br>
+<input type="email" class="form-control" name="email" placeholder="email"> <br>
+<input type="password" class="form-control" name="email" placeholder="passwod"> <br>
+<input class="btn btn-danger" type="submit">
+</div>
+</form>
+{{/if}}
+
+<!--about.js il chaytu--->
+
+const login={name:"dhanshul",admin:false}
+   res.render('login2',{user,values,five,person,welcome,login});  
+
+<!--------------------------------------------------------------------------------Array--close------------------------------------------------------->
+
+
+<!-------------------------------------------------------------database connext---------------------------------------------------------------------->
+
+
+(npm install mysql
+outside the frame install.js / then create in datbase new file manually)
+
+    var mysql = require('mysql');
+    var con = mysql.createConnection({
+      host: "127.0.0.1",
+      user: "root",
+      password: "",
+      database:"express"
+    });
+    con.connect(function(err){
+      if (err) throw err;
+      console.log("Connected!");
+    });
+
+
+<!----------------->

@@ -1,0 +1,15 @@
+<-----------------array value------------------------ >
+in js 
+
+router.get('/', function(req, res, next) {
+  const values=["binshul","binshulvilla","trader"]
+  res.render('about',{values});
+});
+
+<!-------hbs----->
+
+<h3>welcome to out</h3>
+
+{{#each values}}
+<h4>{{this}}</h4>       <!--this curentitem-->
+ {{/each}}
