@@ -1,9 +1,9 @@
-<--------------------------install----------------------->
+<--------------------------install express-generator and npm module----------------------->
 
-npm init
-npm install
+npm install -g npm 
 npx express-generator --hbs
-npm start
+npm init
+npm i 
 <!---------------->
 
 
@@ -50,6 +50,24 @@ ouput:welcome to out
 1-binshulvilla
 2-trader
 
+<!------display--3-->
+index.js
+
+router.get('/', function(req, res, next) {
+ const user={name:'binshul',address:'villa',gender:'male'}
+  res.render('index',{user});  
+});
+
+index.hbs
+<li>name:{{user.name}}</li>
+<li>address:{{user.address}}</li>
+<li>gender:{{user.gender}}</li>
+
+output:
+     name:binshul
+    address:villa
+    gender:male
+
 <!--------------------ADD 5 data------>
 const five=[{name:'binshul',address:'villa',    gender:'male'},
               {name:'rahul',  address:'rahulvilla',gender:'male'},
@@ -78,6 +96,28 @@ const five=[{name:'binshul',address:'villa',    gender:'male'},
   </tr>
   {{/each}}
   </table>
+
+<!---js--->
+
+router.get('/', function(req, res, next) {
+  const five=[{ name:'binshul',address:'villa',gender:'male'},
+             {name:'rahul',address:'rahul villa',gender:'male'},
+             {name:'rahul2',address:'2rahul villa',gender:'male'},
+             {name:'rahul3',address:'3rahul villa',gender:'male'},
+             {name:'rahul4',address:'4rahul villa',gender:'male'}]
+
+  res.render('index',{five});  
+});
+
+output:
+
+name	address	gender
+binshul	villa	male
+rahul	rahul villa	male
+rahul2	2rahul villa	male
+rahul3	3rahul villa	male
+rahul4	4rahul villa	male
+
 
 (each give inside the call athoer way get more heading )
 
@@ -186,3 +226,174 @@ outside the frame install.js / then create in datbase new file manually)
 
 
 <!----------------->
+(1) frist user page create login  add action also 
+
+    userlogin.hbs
+
+<div class="container w-50">
+ <form  method="post" class="form-control" action="/action">
+    <input type="text" name="productcategory" placeholder="productcategory" class="form-control"> <br>
+    <input type="text" name="productname" placeholder="productname" class="form-control"> <br>
+    <input type="text" name="productamount" placeholder="productamount" class="form-control"> <br>
+    <textarea name="productdetails" placeholder="productdetails" class="form-control" ></textarea> <br>
+    <input type="submit" class="btn btn-danger">
+ </form>
+</div>
+
+(2)js connect 
+
+       inedx.js
+
+router.get('/userlogin', function(req, res, next) {
+  res.render('userlogin');
+});
+
+//////action in app.js//////
+
+app.use('/action', indexRouter);
+
+(3)data base create manually and new file db.js and connect insert tables /install npm mysql
+
+<-----------just for information--------------->
+
+database addin db
+
+module.exports=connection;
+
+var db=require('../db'); add in js 
+
+then add in action html 
+parser call in app bodyparser install
+
+<-------------------------->
+
+(4) new page database connect
+
+db.js
+
+var mysql = require('mysql');
+var con = mysql.createConnection({
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
+  database:"study"
+});
+con.connect(function(err){
+  if (err) throw err;
+  console.log("Connected!");
+});
+module.exports=con
+
+
+(5)in the top of the js 
+
+ ar db=require('../db'); add in js 
+
+6) parser install and call in app,js  then  assign action in hbs page
+    
+var bodyParser = require('body-parser');
+
+app.use(bodyParser());
+
+////then  assign action in hbs page/////
+
+   index.js
+
+router.post('/action',function(req,res)
+{
+  var productcategory=req.body.productcategory
+  var productname=req.body.productname
+  var productamount=req.body.productamount
+  var productdetails=req.body.productdetails
+  var sql=`insert into userlogin(productcategory,productname,	productamount,productdetails) values("${productcategory}","${productname}","${	productamount}","${productdetails}")`;
+db.query(sql,function(err,result){
+  if(err) throw err;
+  res.redirect('/userlogin');
+})
+
+})
+
+
+
+(7) then show output insert
+
+(8) then add new hbs page for view in page db details
+
+    userview.hbs
+
+<div class="container-fluid w-50">
+    <table border="1" class="mt-3" >
+        <tr>
+            <th>productcategory</th>
+            <th>productname</th>
+            <th>productamount</th>
+            <th>productdetails</th>
+        </tr>
+        {{#each data}}
+        <tr>
+            <td>{{this.productcategory}}</td>
+            <td>{{this.productname}}</td>
+            <td>{{this.productamount}}</td>
+            <td>{{this.productdetails}}</td>
+           <td><a href="edit"class="btn btn-success">edit</a></td> 
+           <td><a href="delete"class="btn btn-danger">delete</a></td> 
+        </tr>
+            {{/each}}
+    </table>
+
+</div>
+
+(9) to selet from database and and show it in userpage
+
+     index.js
+
+router.get('/userview', function(req, res, next) {
+  var sql='select * from userlogin';
+  db.query(sql,function(err,rows,fields){
+    if (err) throw err;
+  res.render('userview',{data:rows});
+});
+});
+
+
+
+
+<!-----------------------------------------------------------------user viewing db_table to page------------------------------------->
+///////userview///
+
+router.get('/userpro', function(req, res, next) { 
+  var sql='select * from product';
+  db.query(sql,function(err,rows,fields){
+  if (err) throw err;
+  res.render('userpro',{data:rows})
+})
+});
+
+
+<------hbs----->
+
+<div class="container-fluid"  >
+<table border="1" class="mt-3">
+     <tr>
+    <th>product_category</th>
+    <th>product_name</th>
+    <th>product_amount</th>
+    <th>product_details</th>
+  </tr>
+   {{#each data}}
+<tr>
+    <td>{{this.product_category}}</td>
+    <td>{{this.product_name}}</td>
+    <td>{{this.product_amount}}</td>
+    <td>{{this.product_details}}</td>
+     <td><a class="btn btn-success" href="edit"> edit</a></td>
+    <td><a  class="btn btn-danger" href="delete">delete</a></td>
+  </tr>
+  {{/each}}
+  </table>
+  </div>
+
+( userpro is page / select * from (database name )/ render(samepage))
+
+
+<!------------------------------------------------------------------------------------------------------------------------------------->
