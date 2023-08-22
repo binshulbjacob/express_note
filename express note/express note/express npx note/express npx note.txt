@@ -396,4 +396,296 @@ router.get('/userpro', function(req, res, next) {
 ( userpro is page / select * from (database name )/ render(samepage))
 
 
-<!------------------------------------------------------------------------------------------------------------------------------------->
+<!----------------------------------------------------------------------DELETE---------------------------------------------------------------------->
+
+hbs
+
+<a href="/delete/{{this.id}}">Delete</a>
+
+js
+
+router.get('/delete/:id', function(req,res){
+  var id = req.params.id;
+  var sql = `delete from products where id = ${id}`;
+  db.query(sql, function(err, result){
+    if(err) throw err;
+    res.redirect('/products');
+  })
+})
+
+ (////deletename can change in router change the names ////where id is id must be in database id name ////////banalce id are id ///)
+
+
+
+<!----------------------------------------------------------------------DELETE---------------------------------------------------------------------->
+
+<!---------------------------------------------------------------------EDIT------------------------------------------------------------------------>
+edit create new hbs and edit form call in js and app.js
+
+
+
+
+js(call id also //by adding var to code we can display the old details in edit page)
+
+router.get('/editproduct/:id', function(req, res, next) {
+  var id=req.params.id;
+  var sql=`select * from product where nid=${id};`
+  db.query
+  (sql,function(err,result){
+    if (err) throw err;
+    res.render("editproduct", { data: result}) 
+  })
+})
+
+(//editproductis new href given to edit switch/// nid is datbase id
+
+hbs
+
+<div class="container w-50"> <br>
+<h1 class="text-center">PRODUCT EDIT</h1>
+
+<form method="post" class="form-control" >
+    {{#each data}}
+    <input type="text"class="form-control" name="productcategory" placeholder="productcategory" value="{{this.product_category}}"><br>
+   
+    <input type="text" name="productname" placeholder="productname" class="form-control" value="{{this.product_name }}"> <br>
+    <input type="text" name="productamount" placeholder="productamount" class="form-control" value="{{this.product_amount }}"><br>
+    <textarea  name="productdetails" placeholder="productdetails" class="form-control" >{{this.product_details}}</textarea>
+    <input type="submit" class="btn btn-danger">
+
+
+  {{/each}}
+</form>
+</div>
+
+<!-----addinginformfor----update----->
+
+hbs
+
+<div class="container w-50"> <br>
+<h1 class="text-center">PRODUCT EDIT</h1>
+
+{{#each data}}
+<form method="post" class="form-control" action="/edit1/{{this.nid}}">
+    <input type="text"class="form-control" name="productcategory" placeholder="productcategory" value="{{this.product_category}}"><br>
+   
+    <input type="text" name="productname" placeholder="productname" class="form-control" value="{{this.product_name }}"> <br>
+    <input type="text" name="productamount" placeholder="productamount" class="form-control" value="{{this.product_amount }}"><br>
+    <textarea  name="productdetails" placeholder="productdetails" class="form-control" >{{this.product_details}}</textarea>
+    <input type="submit" class="btn btn-danger">
+
+
+  {{/each}}
+</form>
+</div>
+
+(////each in hbs paste above form because they need to call that id
+
+js
+
+router.post('/edit1/:nid',function(req, res){
+  var nid= req.params.nid
+  var productcategory=req.body.productcategory
+  var productname=req.body.productname
+  var productamount=req.body.productamount
+  var productdetails=req.body.productdetails
+
+  var query=`update product set product_category='${productcategory}',product_name='${productname}',product_amount='${productamount}',product_details='${productdetails}'where nid=${nid}`;
+  db.query(query,function (err,result){
+    if (err) throw err;
+  res.redirect('/userpro');
+  });
+});
+
+
+<!-------fogender and address in update ----->
+
+
+//customhelper.js  (//newcreate//)
+const Handlebars = require("hbs");
+Handlebars.registerHelper("eq", (a, b) => a == b);
+
+//app.js
+const customHelpers = require("./customehelper");  
+
+or
+require("./customhelper");(//in top//)
+
+//edit.hbs
+{{#if (eq this.gender "Male")}}checked{{/if}} 
+(//forgender//)
+
+js
+
+<option value="{{this.district}}">{{this.district}}</option>
+(//below the select tag//)
+
+
+
+<!---------------------------------------------------------------------------------------------------------------------------->
+
+login page  email  password  ,login button  
+ js get 
+
+
+
+
+<!-------------------------------------------------------------------Authentication------------------LOGIN-----LOGOUT----------------------------------------------------------------->
+
+<!----Login---->
+
+npm install express-session
+
+Get secret key for session (security)
+
+
+const crypto = require('crypto');
+const secretKey = crypto.randomBytes(64).toString('hex');
+console.log('Generated secret key:', secretKey);
+
+(////these key paste outside  create a the folder and call as js and run in cmd the (nodefilename)///get a code paste in secret)//
+<*** paste this above***)
+
+app.js
+const session = require('express-session');
+
+// Set up session
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true
+}));
+
+hbs
+<h1>Login</h1>
+<form method="POST" action="/login">
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" required><br>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required><br>
+    <input type="submit" value="Login">
+</form>
+
+js
+app.post('/login', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    // Query the database
+    var query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error(error);
+            return res.redirect('/login');
+        }
+
+        if (results.length > 0) {
+            req.session.user = username;
+            return res.redirect('/');
+        } else {
+            return res.redirect('/login');
+        }
+    });
+});
+
+(///app.post or router.post/////// \login inline above is html actions))
+
+<!----------------------------------Logout------------->
+
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(err);
+        }
+        res.redirect('/login');
+    });
+});
+
+
+(////logout give is give he button href logout ))
+
+
+(///app.get or router.get))
+
+<!-----------------------------------------------------------------------end of express and mysql---------------------------------------------------------------------------------> 
+
+ STUDENT PAGE WELCOME  ADMISSION NUMBER  
+
+   STUDENTS  DETAILS EDIT CHAYAN 
+
+<!---------------------------------------------------------------------studentpage create they student can edit and delete thier profile-------------------------->
+
+
+new stident homepage + student detailsshoe+ editbutton +show+
+
+index.js
+
+ router.get('/studentpage', function(req, res, next) {
+  var email=req.session.user;
+  var sql=`select * from express2 where email='${email}'`
+  db.query(sql,function(err,rows,result){
+    if(err) throw err;
+ res.render('studentpage',{data:rows});
+});
+
+  })
+
+studentpage.bbs
+
+
+ <table class="table table-bordered mt-3">
+     <tr>
+    <th style="background-color: aqua;" >admission_no</th>
+    <th style="background-color: aqua;" >fullname</th>
+    <th style="background-color: aqua;">address</th>
+    <th style="background-color: aqua;">gender</th>
+    <th style="background-color: aqua;">birthdate</th>
+    <th style="background-color: aqua;">cource</th>
+    <th style="background-color: aqua;">contact</th>
+    <th style="background-color: aqua;">parentcontact</th>
+    <th style="background-color: aqua;">email</th>
+    <th style="background-color: aqua;">password</th>
+    <th style="background-color: aqua;">joindate</th>
+    <th style="background-color: rgb(255, 217, 0);">update</th>
+  </tr>
+   {{#each data}}
+<tr>
+    <td>{{this.admission_no}}</td>
+    <td>{{this.fullname}}</td>
+    <td>{{this.address}}</td>
+    <td>{{this.gender}}</td>
+    <td>{{this.birthdate}}</td>
+    <td>{{this.cource}}</td>
+    <td>{{this.contact}}</td>
+    <td>{{this.parentcontact}}</td>
+    <td>{{this.email}}</td>
+    <td>{{this.password}}</td>
+    <td>{{this.joindate}}</td>
+    <td>
+    <a class="btn btn-success"  href="/edit/{{this.eid}}"> edit</a>
+    <a  class="btn btn-danger" href="/delete/{{this.eid}}">delete</a>
+    </td>
+  </tr>
+  {{/each}}
+  </table>
+
+(///same code we diaplay in viewing registered students table///)
+
+
+<!------------------------------------if student login they show a welcomme to (thiet admission no /or any)display 
+
+js
+ router.get('/studentindex', function(req, res, next) {
+ var email= req.session.user
+  var sql=`select * from express2 where email='${email}'`
+  db.query(sql,function(err,rows){
+    if(err) throw err;
+  res.render ('studentindex',{data1:rows});
+  });
+});
+
+
+hbs
+
+{{#each data1}}
+<h4> welcome to {{this.email}}</h4>
+ {{/each}}
