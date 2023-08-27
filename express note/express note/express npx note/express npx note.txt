@@ -689,3 +689,219 @@ hbs
 {{#each data1}}
 <h4> welcome to {{this.email}}</h4>
  {{/each}}
+
+<!---------------------------------------------------------------------------PROJECT--------------------------------------------------------------------------------------------->
+
+Library Management System
+
+A college library management is a project that manages and stores books information electronically according to students needs. 
+The system helps both students and library manager to keep a constant track of all the books available in the library. 
+It allows both the admin and the student to search for the desired book. This task if carried out manually will be tedious and includes chances of mistakes. 
+These errors are avoided by allowing the system to keep track of information such as issue date, last date to return the book and thus there is no need to keep manual track of this information
+which thereby avoids chances of mistakes. Thus this system reduces manual work to a great extent allows smooth flow of library activities by removing chances of errors in the details.
+
+Modules:
+
+1. Admin login: Admin is the one who administers the system by adding or removing e-books into and from the system respectively.
+2. User login: Students have to register themselves into the system to create an account. After registering successfully, they can then login into the system by entering 10 digit mobile number and their email id
+3. Add and Update Books: The admin can add books to the system by entering the details of the books and can even update the details.
+4. Search option: Admin and Students can even search for books by entering the name of the book.
+5. View Order-The admin can view order for the books.
+6. Place order- The students can place order for the books and simultaneously the quantity of the book ordered will be decremented.
+
+
+libraray login home page  //boog add chayan page ////book form value store///edit delete///
+
+
+student register form///studentlogin//booksearch///book order///quantity//librarey view and confirm///
+
+
+<!------------------------------------------------------------>
+
+////login/with user admin//
+
+router.post('/login1',(req,res)=>{
+  var email=req.body.email
+  var password=req.body.password
+   var query =`SELECT * FROM library WHERE email='${email}' AND password ='${password}'`
+   db.query(query,(error,result)=>{
+    if(error){
+      console.error(error);
+      return res.redirect('/userlog')
+    }
+     if(result.length >0){
+      req.session.user=email;
+
+      if(result[0]['usertype']=='1'){
+      return res.redirect('/userhome')
+
+     }else if(result[0]['usertype']=='0'){
+      return res.redirect('/adminregister')
+     }else{
+      return res.redirect('/register')
+     }
+    }
+   });
+});
+
+
+(crete a another table enum in user register table and type 0 or 1 as per / )
+
+
+// ////search box search  data///
+
+router.post('/search',function(req,res,next){
+  var search=req.body.search
+  // console.log(search)
+  var sql=`select *  from adminreg WHERE author="${search}" `;
+  db.query(sql,function(err,row,fields){
+    if (err) throw err;
+    //  console.log(row)
+  res.render('userproduct',{data7:row})
+})
+  })
+
+(here give search author so author in table show)
+
+hbs
+
+<form action="/search" method="post">
+        <input type="text" id="searchInput" placeholder="Enter your search" name="search">
+        <input type="submit">Search</input>
+         </form>
+
+
+
+
+//product user view in other page inside poster by admin user can buy ////
+
+ router.get('/userproduct', function(req, res, next) {
+  var sql='select * from adminreg';
+  db.query(sql,function(err,rows,fields){
+    if (err) throw err;
+  res.render('userproduct',{data7:rows});
+});
+});
+
+hbs   (new hbs page to display admin posted user can view )
+
+<table border="1" class="mt-3">
+        <tr>
+            <th>author</th>
+            <th>bookname</th>
+            <th>price</th>
+            <th>publishdate</th>
+            <th>quantity</th>
+            <th>review</th>
+        </tr>
+        {{#each data7}}
+        <tr>
+            <td>{{this.author}}</td>
+            <td>{{this.bookname}}</td>
+            <td>{{this.price}}</td>
+            <td>{{this.publishdate}}</td>
+            <td>{{this.quantity}}</td>
+            <td>
+           <a href="/buy3/{{this.nid}}" class="btn btn-success">BUY</a>
+           
+           </td>
+        </tr>
+            {{/each}}
+    </table>
+
+</section>
+
+
+ /////user click buy/ data goes to database show  ///////if we do this only admin can see who order it ////
+create a new data base eg:userbuy table any id , authorid,author etc...
+
+js
+
+/////userbuy/database show///////
+router.get('/buy3/:nid', function(req, res, next) {
+  var nid=req.params.nid;
+   var author=req.session.user;
+    var sql=`insert into userbuy (author,authorid) values("${author}","${nid}");`
+
+    db.query (sql,function(err,result){
+    if (err) throw err;
+    res.redirect("/userproduct") 
+  })
+})
+
+(buy 3 is buy link give id)
+
+hbs
+<a href="/buy3/{{this.nid}}" class="btn btn-success">BUY</a>
+
+
+
+/////userbuy admin see///////
+js
+
+router.get('/userbuy', function(req, res, next) {
+  var sql='select * from userbuy';
+  db.query(sql,function(err,rows,fields){
+    if (err) throw err;
+  res.render('userbuy',{data9:rows});
+});
+});
+
+
+////////////user buy product user see/////
+
+
+hbs (user buy view)
+
+<h1 class="text-center">userbuyview</h1>
+<div class="container-fluid ">
+    <table border="1" class="mt-3">
+        <tr>
+             <th>name</th>
+
+             <th>author</th>
+             <th>bookname</th>
+             <th>price</th>
+        </tr>
+        {{#each data9}}
+        <tr>
+            <td>{{this.name}}</td>
+            <td>{{this.author}}</td>
+            <td>{{this.bookname}}</td>
+            <td>{{this.price}}</td>
+        </tr>
+            {{/each}}
+    </table>
+
+</div>
+
+
+js
+
+user buy product user see
+
+router.get('/userbuyview', function(req, res,next){
+  var email=req.session.user
+  var sql=`SELECT * from userbuy INNER JOIN adminreg  ON  userbuy.authorid=adminreg.nid   INNER JOIN  library on  userbuy.author=library.email  WHERE library.email="${email}"`;
+ 
+  // where userbuy.author="${email}"
+
+  db.query(sql,function(err,row,result){
+ console.log(email)
+
+ if (err) throw err;
+  res.render('userbuyview',{data9:row});
+});
+});
+
+
+(select * from userbuy means user plays buy order and display in a database is userbuy 
+
+admineg on meand  admin post book details database
+
+userbuy.authorid=adminreg.nid means userbuy is databse ___authorid id userbuytablefield___adminregis table display registered product by admin __nid is its primarykey id
+
+
+INNER JOIN  library on  userbuy.author=library.email --means--- library is a table fiels were user adin login are placed___userbuy is field userclick buy details show in this field table__author us an another field in both registration database and buy show admin database __library.email= is library is field they store userid password email 
+
+ WHERE library.email="${email}"`  = __where library is a login email password name nuber etc  fields there )
