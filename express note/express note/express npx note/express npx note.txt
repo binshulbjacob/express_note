@@ -905,3 +905,108 @@ userbuy.authorid=adminreg.nid means userbuy is databse ___authorid id userbuytab
 INNER JOIN  library on  userbuy.author=library.email --means--- library is a table fiels were user adin login are placed___userbuy is field userclick buy details show in this field table__author us an another field in both registration database and buy show admin database __library.email= is library is field they store userid password email 
 
  WHERE library.email="${email}"`  = __where library is a login email password name nuber etc  fields there )
+
+
+
+
+<!-----------------------------------------------------------------------------BALANCE--COPY----------------------------------------------------------------------------------->
+
+
+/////userbuy/database show///////
+
+# (inserted this quary in  buy chayuna buy button quaryin inside) insert balance copy things already insert is thier just added update quary and sql1)
+# add aa new field in registration database balance copy 
+#buy3= name href link in buy button 
+#nid = book  registration table id
+
+router.get('/buy3/:nid/:balancecopy', function(req, res, next) {
+  var nid=req.params.nid;
+   var author=req.session.user;
+
+   var balancecopy=req.params.balancecopy;
+  //  var balancecopy=req.params.balancecopy;
+  var balancecopy1 = balancecopy - 1;
+
+    var sql=`insert into userbuy (author,authorid) values("${author}","${nid}");`
+    var sql1=`update adminreg set balancecopy="${balancecopy1}" where nid="${nid}"`
+
+    db.query (sql,function(err,result){
+    if (err) throw err;
+    console.log()
+
+    db.query(sql1,function(err1,result){
+    res.redirect("/userproduct") 
+    })
+  })
+})
+
+hbs
+
+ <a href="/buy3/{{this.nid}}/{{this.balancecopy}}" class="btn btn-success">BUY</a>
+
+
+********************THEN*******************
+
+#ADDTHE BALANCE COPY IN BOOK REGISTRATION QUARY ALSO  ALLED LIN THIS 
+# THEN IN VALUES WE DONOT ADD BALANCE COPY JUST ADD THE SAME QUANTITY BECAUSE THE BLANCE COPY NEED TO SAME LINK QUANTITY ADDED
+**INSERTED IN OLD REGISTRATIONN BOOK PAGE ***
+
+router.post('/action1',function(req,res)
+{
+  var author=req.body.author
+  var bookname=req.body.bookname
+  var price=req.body.price
+  var publishdate=req.body.publishdate
+  var quantity=req.body.quantity
+  var sql=`insert into adminreg (author,bookname,	price,publishdate,quantity,balancecopy) values("${author}","${bookname}","${	price}","${publishdate}","${quantity}","${quantity}")`;
+  db.query(sql,function(err,result){
+    if(err) throw err;
+    res.redirect('/adminregister');
+  })
+  })
+
+
+
+<!----==================================-----RETURN THE ORDER USERBUYED __THEN THE PRODUCT QUANTITY ALSO NEED TO INCREASE BACK -------------------------------------------->
+
+
+///return///buy using after balancecopy done sucessfully///
+
+# return1 =href link name 
+# do it seperatly 
+# kid = userproductuy databse id is kid 
+# nid = admin product register book page id 
+# balance copy id field name 
+# parse Int +1 after return delete , quantity increase 1 
+
+
+router.get('/return1/:kid/:balancecopy/:nid',function(req,res){
+  var nid=req.params.nid;
+  var balancecopy=req.params.balancecopy;
+  var kid=req.params.kid;
+  var balance=req.params.balancecopy;
+
+
+
+  var balancecopy = parseInt(balance) + 1;
+  var sql=`update adminreg set balancecopy="${balancecopy}" where nid="${nid}"`;
+  var sql1=`delete from userbuy where kid= ${kid}`;
+
+
+  db.query(sql,function(err,result){
+    if(err) throw err;
+    db.query(sql1,function(err,result){
+      if(err) throw err
+      res.redirect('/userbuyview');
+    })
+    
+  })
+})
+
+
+HBS
+
+   <td> <a href="/return1/{{this.kid}}/{{this.balancecopy}}/{{this.nid}}" class="btn btn-success">Return</a></td>
+
+
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
